@@ -2,10 +2,18 @@
     class="bg-gray-950 min-h-screen text-white"
     x-data="{
         show: false,
+        _dismissTimer: null,
         init() {
             $wire.on('scan-complete', () => {
-                this.show = true;
-                setTimeout(() => { this.show = false; $wire.dismissResult(); }, 4000);
+                this.show = false;
+                this.$nextTick(() => {
+                    this.show = true;
+                    clearTimeout(this._dismissTimer);
+                    this._dismissTimer = setTimeout(() => {
+                        this.show = false;
+                        $wire.dismissResult();
+                    }, 4000);
+                });
             });
         }
     }"
@@ -95,7 +103,7 @@
                 ];
                 $colors = $colorMap[$status] ?? $colorMap['invalid'];
             @endphp
-            <div x-show="show" class="rounded-xl border {{ $colors['border'] }} {{ $colors['bg'] }} overflow-hidden">
+            <div x-show="show" x-if="show" class="rounded-xl border {{ $colors['border'] }} {{ $colors['bg'] }} overflow-hidden">
                 {{-- Auto-dismiss progress bar --}}
                 <div class="h-1 {{ $colors['bar'] }} progress-shrink"></div>
 

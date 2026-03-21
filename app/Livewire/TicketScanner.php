@@ -42,7 +42,9 @@ class TicketScanner extends Component
         $code = strtoupper(trim($this->ticketCode));
         $this->ticketCode = '';
 
-        $attendee = Attendee::where('ticket_code', $code)->first();
+        $attendee = Attendee::where('ticket_code', $code)
+            ->whereHas('ticketTier', fn ($q) => $q->where('event_id', $this->event->id))
+            ->first();
 
         if (! $attendee) {
             $this->scanResult = [
