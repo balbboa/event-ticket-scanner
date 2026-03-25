@@ -1,0 +1,21 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+:root,
+.fi-body {
+    --fi-color-gray-950: #080c18;
+}
+
+.fi-sidebar {
+    background: rgba(8, 12, 24, 0.85) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.fi-topbar-nav,
+.fi-topbar {
+    background: rgba(8, 12, 24, 0.80) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
