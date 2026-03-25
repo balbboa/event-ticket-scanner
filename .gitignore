@@ -1,4 +1,6 @@
 *.log
+.worktrees/
+.superpowers/
 .DS_Store
 .env
 /database/*.sqlite
