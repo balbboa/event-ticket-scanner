@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class Attendee extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'ticket_tier_id', 'name', 'email', 'phone', 'ticket_code',
         'status', 'checked_in_at', 'discount_code',
