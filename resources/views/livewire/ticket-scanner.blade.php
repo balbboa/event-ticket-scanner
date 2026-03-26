@@ -181,7 +181,9 @@
         </div>
 
         {{-- Camera Viewfinder --}}
-        <div class="glass-card mb-8 overflow-hidden relative" style="min-height:220px">
+        <div class="glass-card mb-8 overflow-hidden relative"
+             style="min-height:220px"
+             :style="viewfinderState === 'scanning' ? 'border:1.5px solid rgba(139,92,246,0.6);min-height:220px' : 'min-height:220px'">
 
             {{-- Normal scanning state --}}
             <div x-show="!cameraError" class="relative w-full" style="min-height:220px">
@@ -218,7 +220,8 @@
                 {{-- Error overlay --}}
                 <div x-show="viewfinderState === 'error'" class="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl" style="background:rgba(69,10,10,0.85);border:2px solid rgba(239,68,68,0.8);box-shadow:0 0 24px rgba(239,68,68,0.25)">
                     <span class="text-3xl">✗</span>
-                    <span class="text-red-400 text-sm font-semibold">Scan failed</span>
+                    <span class="text-red-400 text-sm font-semibold"
+                          x-text="$wire.scanResult?.status === 'already_used' ? 'Already used' : ($wire.scanResult?.status === 'cancelled' ? 'Cancelled' : 'Invalid ticket')"></span>
                 </div>
             </div>
 
