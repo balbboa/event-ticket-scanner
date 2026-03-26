@@ -22,7 +22,6 @@ class AttendeeFactory extends Factory
             'name'           => $this->faker->name(),
             'email'          => $this->faker->unique()->safeEmail(),
             'phone'          => $this->faker->phoneNumber(),
-            'ticket_code'    => strtoupper($this->faker->unique()->bothify('TKT-####-????')),
             'status'         => 'confirmed',
         ];
     }

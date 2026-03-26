@@ -62,4 +62,43 @@ class TicketScannerTest extends TestCase
 
         $this->assertEquals('checked_in', $attendee->fresh()->status);
     }
+
+    #[Test]
+    public function it_checks_in_attendee_manually_by_id(): void
+    {
+        $user     = User::factory()->create();
+        $event    = $this->makeEvent();
+        $tier     = $event->ticketTiers()->first();
+        $attendee = Attendee::factory()->create([
+            'ticket_tier_id' => $tier->id,
+            'status'         => 'confirmed',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(\App\Livewire\TicketScanner::class, ['event' => $event])
+            ->call('checkInAttendee', $attendee->id)
+            ->assertDispatched('scan-complete')
+            ->assertSet('scanResult.status', 'success');
+
+        $this->assertEquals('checked_in', $attendee->fresh()->status);
+    }
+
+    #[Test]
+    public function it_does_not_check_in_already_checked_in_attendee_manually(): void
+    {
+        $user     = User::factory()->create();
+        $event    = $this->makeEvent();
+        $tier     = $event->ticketTiers()->first();
+        $attendee = Attendee::factory()->create([
+            'ticket_tier_id' => $tier->id,
+            'status'         => 'checked_in',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(\App\Livewire\TicketScanner::class, ['event' => $event])
+            ->call('checkInAttendee', $attendee->id)
+            ->assertSet('showResult', false);
+
+        $this->assertEquals('checked_in', $attendee->fresh()->status);
+    }
 }
