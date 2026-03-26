@@ -97,6 +97,7 @@ class TicketScannerTest extends TestCase
         Livewire::actingAs($user)
             ->test(\App\Livewire\TicketScanner::class, ['event' => $event])
             ->call('checkInAttendee', $attendee->id)
+            ->assertNotDispatched('scan-complete')
             ->assertSet('showResult', false);
 
         $this->assertEquals('checked_in', $attendee->fresh()->status);
