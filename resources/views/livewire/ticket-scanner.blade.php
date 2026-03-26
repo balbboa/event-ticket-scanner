@@ -187,7 +187,7 @@
 
             {{-- Normal scanning state --}}
             <div x-show="!cameraError" class="relative w-full" style="min-height:220px">
-                <div id="qr-reader" class="w-full rounded-xl" style="min-height:220px;position:relative"></div>
+                <div id="qr-reader" class="w-full rounded-xl" style="min-height:220px;position:relative" wire:ignore></div>
 
                 {{-- Custom overlay (corners, scan line, status) --}}
                 <div class="absolute inset-0 pointer-events-none" x-show="viewfinderState === 'scanning'">
@@ -235,7 +235,7 @@
         </div>
 
         {{-- Counter Cards --}}
-        <div class="grid grid-cols-3 gap-4 mb-8" wire:poll.5000ms="refreshCounters">
+        <div class="grid grid-cols-3 gap-4 mb-8">
 
             {{-- Checked In --}}
             <div class="glass-card p-4">
