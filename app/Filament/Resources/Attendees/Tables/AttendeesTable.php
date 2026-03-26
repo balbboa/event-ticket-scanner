@@ -4,15 +4,19 @@ namespace App\Filament\Resources\Attendees\Tables;
 
 use App\Models\Event;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontFamily;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AttendeesTable
 {
@@ -61,6 +65,11 @@ class AttendeesTable
                     ->relationship('ticketTier', 'name'),
             ])
             ->recordActions([
+                Action::make('download_qr')
+                    ->label('QR')
+                    ->icon(Heroicon::OutlinedQrCode)
+                    ->url(fn ($record) => route('attendees.qr', $record))
+                    ->openUrlInNewTab(),
                 Action::make('check_in')
                     ->visible(fn ($record) => $record->status === 'confirmed')
                     ->requiresConfirmation()
@@ -76,6 +85,36 @@ class AttendeesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('export_csv')
+                        ->label('Export CSV')
+                        ->icon(Heroicon::OutlinedArrowDownTray)
+                        ->action(function (Collection $records): StreamedResponse {
+                            $headers = [
+                                'Content-Type' => 'text/csv',
+                                'Content-Disposition' => 'attachment; filename="attendees-' . now()->format('Y-m-d') . '.csv"',
+                            ];
+
+                            $callback = function () use ($records) {
+                                $handle = fopen('php://output', 'w');
+                                fputcsv($handle, ['Name', 'Email', 'Phone', 'Ticket Code', 'Tier', 'Event', 'Status', 'Checked In At']);
+                                foreach ($records->load('ticketTier.event') as $attendee) {
+                                    fputcsv($handle, [
+                                        $attendee->name,
+                                        $attendee->email,
+                                        $attendee->phone,
+                                        $attendee->ticket_code,
+                                        $attendee->ticketTier?->name,
+                                        $attendee->ticketTier?->event?->name,
+                                        $attendee->status,
+                                        $attendee->checked_in_at?->toDateTimeString(),
+                                    ]);
+                                }
+                                fclose($handle);
+                            };
+
+                            return response()->stream($callback, 200, $headers);
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make(),
                 ]),
             ])

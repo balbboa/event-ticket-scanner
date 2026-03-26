@@ -6,4 +6,5 @@ Route::get('/', fn () => redirect('/admin'));
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/events/{event}/scanner', \App\Livewire\TicketScanner::class)->name('scanner');
+    Route::get('/attendees/{attendee}/qr', [\App\Http\Controllers\AttendeeQrController::class, 'show'])->name('attendees.qr');
 });
